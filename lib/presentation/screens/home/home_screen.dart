@@ -49,7 +49,7 @@ class _CustomListTile extends StatelessWidget {
         color: colors.primary,
       ),
       trailing: Icon(
-        Icons.access_alarm,
+        Icons.arrow_right,
         color: colors.primary,
       ),
       onTap: () {
