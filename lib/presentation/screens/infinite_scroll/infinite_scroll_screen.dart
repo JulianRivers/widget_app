@@ -28,6 +28,16 @@ class _InfiniteScrollScreenState extends State<InfiniteScrollScreen> {
     });
   }
 
+  Future<void> onRefresh() async {
+    await Future.delayed(const Duration(seconds: 2));
+    if (!isMounted) return;
+    final lastId = imagesIds.last;
+    imagesIds.clear();
+    imagesIds.add(lastId + 1);
+    addFiveImages();
+    setState(() {});
+  }
+
   Future loadNextPage() async {
     if (isLoading) return;
     isLoading = true;
@@ -59,21 +69,24 @@ class _InfiniteScrollScreenState extends State<InfiniteScrollScreen> {
         context: context,
         removeTop: true,
         removeBottom: true,
-        child: ListView.builder(
-          controller: scrollController,
-          itemCount: imagesIds.length,
-          itemBuilder: (context, index) {
-            return FadeInImage(
-              width: double.infinity,
-              height: 300,
-              fit: BoxFit.cover,
-              placeholder: const AssetImage('assets/images/jar-loading.gif'),
-              image: NetworkImage(
-                  'https://picsum.photos/id/${imagesIds[index]}/500/300'),
-              imageErrorBuilder: (context, error, stackTrace) =>
-                  Image.asset('assets/images/jar-loading.gif'),
-            );
-          },
+        child: RefreshIndicator(
+          onRefresh: onRefresh,
+          child: ListView.builder(
+            controller: scrollController,
+            itemCount: imagesIds.length,
+            itemBuilder: (context, index) {
+              return FadeInImage(
+                width: double.infinity,
+                height: 300,
+                fit: BoxFit.cover,
+                placeholder: const AssetImage('assets/images/jar-loading.gif'),
+                image: NetworkImage(
+                    'https://picsum.photos/id/${imagesIds[index]}/500/300'),
+                imageErrorBuilder: (context, error, stackTrace) =>
+                    Image.asset('assets/images/jar-loading.gif'),
+              );
+            },
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(
